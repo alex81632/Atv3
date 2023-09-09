@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Árvore DOM</title>
+    <style>
+        .selected {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <h1>Editor de Árvore DOM</h1>
+    <div>
+        <button id="addElement">Adicionar Elemento</button>
+        <button id="removeElement">Remover Elemento</button>
+        <button id="changeColor">Mudar Cor</button>
+        <button id="addRemoveClass">Adicionar/Remover Classe</button>
+    </div>
+    <!-- Árvore DOM inicial -->
+    <div id="tree">
+        <ul>
+            <li>Item 1</li>
+            <li>Item 2
+                <ul>
+                    <li>Subitem 2.1</li>
+                    <li>Subitem 2.2</li>
+                </ul>
+            </li>
+            <li>Item 3</li>
+        </ul>
+    </div>
+    <div>
+        <h2>Árvore DOM Atual</h2>
+        <pre id="domTree"></pre>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function updateDOMTree() {
+                var tree = $("#tree").html();
+                $("#domTree").text(tree);
+            }
+
+            // Adicionar um elemento filho ao elemento selecionado
+            $("#addElement").click(function() {
+                var selectedElement = $("#tree li.selected");
+                if (selectedElement.length > 0) {
+                    var newElement = prompt("Nome do novo elemento:", "");
+                    if (newElement !== null) {
+                        // checar se já tem uma lista
+                        if (selectedElement.children("ul").length === 0) {
+                            selectedElement.append("<ul></ul>");
+                        }
+                        // Adicionar na lista
+                        selectedElement.children("ul").append("<li>" + newElement + "</li>");
+                        updateDOMTree();
+                    }
+                }
+                else {
+                    // Adicionar um novo elemento raiz
+                    var newElement = prompt("Nome do novo elemento:", "");
+                    if (newElement !== null) {
+                        // adicionar dentro da ul
+                        $("#tree ul").append("<li>" + newElement + "</li>");
+                        updateDOMTree();
+                    }
+                }
+            });
+
+            // Ao clicar em um elemento da árvore DOM, selecionar o elemento correspondente na árvore DOM, mesmo que esteja dentro de um nível mais profundo
+            var selectedElement = null;
+            selectedElement = $("#tree li").click(function() {
+                // Remover a seleção do elemento anterior
+                if (selectedElement !== null) {
+                    selectedElement.removeClass("selected");
+                }
+                // Selecionar o novo elemento
+                selectedElement = $(this);
+                selectedElement.addClass("selected");
+                updateDOMTree();
+            });
+
+
+
+            // Remover elemento selecionado e todos os seus filhos
+            $("#removeElement").click(function() {
+                var selectedElement = $("#tree li.selected");
+                if (selectedElement.length > 0) {
+                    selectedElement.remove();
+                    updateDOMTree();
+                }
+            });
+
+            // Mudar a cor do elemento selecionado
+            $("#changeColor").click(function() {
+                var selectedElement = $("#tree li.selected");
+                if (selectedElement.length > 0) {
+                    var newColor = prompt("Nova cor (em hexadecimal):", "#ff0000");
+                    if (newColor !== null) {
+                        selectedElement.css("background-color", newColor);
+                        updateDOMTree();
+                    }
+                }
+            });
+
+
+            // Adicionar/Remover classe do elemento selecionado
+            $("#addRemoveClass").click(function() {
+                var selectedElement = $("#tree li.selected");
+                if (selectedElement.length > 0) {
+                    var className = prompt("Nome da classe:");
+                    if (className !== null) {
+                        selectedElement.toggleClass(className);
+                        updateDOMTree();
+                    }
+                }
+            });
+
+            updateDOMTree();
+        });
+    </script>
+</body>
+</html>
